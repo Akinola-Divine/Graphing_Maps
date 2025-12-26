@@ -1,12 +1,14 @@
+package codes;
+
 /**
  * A directed, weighted edge used by {@link WeightedDigraph}.
  *
- * <p>An {@code Edge} represents a directed connection from vertex {@code v}
+ * <p>An {@code codes.Edge} represents a directed connection from vertex {@code v}
  * to vertex {@code w} with a non-negative weight. Edges are immutable
  * with respect to endpoints and weight, but the graph assigns each edge
  * a unique sequential ID when the edge is inserted.
  *
- * <h3>Edge ID rules</h3>
+ * <h3>codes.Edge ID rules</h3>
  * <ul>
  *     <li>Newly constructed edges have ID {@code -1}.</li>
  *     <li>The ID is set exactly once by {@link WeightedDigraph#addEdge(Edge)}
@@ -48,7 +50,7 @@ public class Edge {
      * <p>Preconditions:
      * <ul>
      *     <li>ID must be non-negative</li>
-     *     <li>Edge must not already have an ID</li>
+     *     <li>codes.Edge must not already have an ID</li>
      * </ul>
      *
      * @param iD unique edge ID
@@ -56,7 +58,7 @@ public class Edge {
      * @throws IllegalStateException if this edge already has an ID
      */
 
-    protected void setiD(int iD){
+    public void setiD(int iD){
         if (iD < 0) throw new IllegalArgumentException("edge id must be non-negative");
         if (this.iD != -1) {
             throw new IllegalStateException("edge id already set to " + this.iD);

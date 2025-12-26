@@ -1,3 +1,5 @@
+package codes;
+
 import java.util.NoSuchElementException;
 
 /**
@@ -39,7 +41,7 @@ public class WeightedDigraph {
 
     @SuppressWarnings("unchecked")
     public WeightedDigraph(int V){
-        if (V < 0) throw new IllegalArgumentException("Number of vertices in a WeightedDigraph cannot be less than zero");
+        if (V < 0) throw new IllegalArgumentException("Number of vertices in a codes.WeightedDigraph cannot be less than zero");
         this.V = V;
         this.E = 0;
         indegree = new int[V];
@@ -74,7 +76,7 @@ public class WeightedDigraph {
      * @throws IllegalArgumentException if {@code v} is outside the valid range
      */
 
-    private void validateVertex(int v){
+    protected void validateVertex(int v){
         if (v < 0 || v >= V)   throw new IllegalArgumentException("Vertex must be between 0 and " + (V-1));
     }
 
@@ -87,7 +89,7 @@ public class WeightedDigraph {
 
     private void validateEdge(int e) {
         if (e < 0 || e >= E) {
-            throw new IllegalArgumentException("Edge id must be between 0 and " + (E - 1));
+            throw new IllegalArgumentException("codes.Edge id must be between 0 and " + (E - 1));
         }
     }
 
@@ -97,9 +99,9 @@ public class WeightedDigraph {
      *
      * <p>Preconditions enforced:
      * <ul>
-     *     <li>Edge must not be {@code null}.</li>
+     *     <li>codes.Edge must not be {@code null}.</li>
      *     <li>Weight must be non-negative and not NaN.</li>
-     *     <li>Edge must not already belong to any graph (ID must be -1).</li>
+     *     <li>codes.Edge must not already belong to any graph (ID must be -1).</li>
      * </ul>
      *
      * @param edge an {@link Edge} whose endpoints and weight define a directed edge
@@ -141,7 +143,7 @@ public class WeightedDigraph {
      */
 
     public int addEdge(int v, int w, double weight) {
-        // You can validate here or let addEdge(Edge) validate via endpoints+weight.
+        // You can validate here or let addEdge(codes.Edge) validate via endpoints+weight.
         Edge e = new Edge(v, w, weight);
         addEdge(e);          // this assigns id, stores in edgesById, updates indegree, etc.
         return e.edgeID();   // now guaranteed to be the sequential id
@@ -191,7 +193,7 @@ public class WeightedDigraph {
      * Retrieves an edge by its globally assigned ID.
      *
      * @param edgeId the ID of the edge
-     * @return the corresponding {@code Edge} object
+     * @return the corresponding {@code codes.Edge} object
      * @throws IllegalArgumentException if the ID is out of range
      */
 
@@ -201,7 +203,7 @@ public class WeightedDigraph {
     }
 
     /**
-     * Returns a new {@code WeightedDigraph} representing the reverse of this graph:
+     * Returns a new {@code codes.WeightedDigraph} representing the reverse of this graph:
      * each edge {@code v -> w} becomes {@code w -> v} with the same weight.
      *
      * @return reversed digraph

@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+
+    // algs4 (Princeton Algorithms)
+    implementation files('libs/algs4.jar')
+}
+
+test {
+    useJUnitPlatform()
+}

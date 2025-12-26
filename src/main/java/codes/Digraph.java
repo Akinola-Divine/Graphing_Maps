@@ -1,14 +1,16 @@
+package codes;
+
 /**
  * A directed graph (digraph) implementation using adjacency lists.
  *
- * <p>Design inspired by Robert Sedgewick and Kevin Wayne's {@code Digraph} class
+ * <p>Design inspired by Robert Sedgewick and Kevin Wayne's {@code codes.Digraph} class
  * from <i>Algorithms, 4th Edition</i> (Addison-Wesley, 2011).</p>
  *
  * @see <a href="https://algs4.cs.princeton.edu/42digraph/">Directed Graphs - Algorithms, 4th Edition</a>
  */
 
 public class Digraph {
-    private final int V; // number of vertices
+    private static int V; // number of vertices
     private int E; // number of edges
     private Bag<Integer>[] adj; // adjacency list representation
     private int[] indegree; // indegree[v] = number of edges pointing to v.
@@ -23,7 +25,7 @@ public class Digraph {
 
     @SuppressWarnings("unchecked")
     public Digraph(int V){
-        if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph cannot be less than zero");
+        if (V < 0) throw new IllegalArgumentException("Number of vertices in a codes.Digraph cannot be less than zero");
         this.V = V;
         this.E = 0;
         indegree = new int[V];
@@ -52,7 +54,7 @@ public class Digraph {
         return this.E;
     }
 
-    private void validateVertex(int v){
+    protected static void validateVertex(int v){
         if (v < 0 || v >= V)   throw new IllegalArgumentException("Vertex must be between 0 and " + (V-1));
     }
 

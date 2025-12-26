@@ -1,3 +1,5 @@
+package codes;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -7,7 +9,7 @@ import java.util.NoSuchElementException;
  * <p>A bag is a collection that supports adding items but not removing them.
  * It supports iteration over the items in no particular order.</p>
  *
- * <p>Design inspired by Robert Sedgewick and Kevin Wayne's {@code Bag} class
+ * <p>Design inspired by Robert Sedgewick and Kevin Wayne's {@code codes.Bag} class
  * from <i>Algorithms, 4th Edition</i> (Addison-Wesley, 2011).</p>
  *
  * @param <T> the type of elements in this bag
