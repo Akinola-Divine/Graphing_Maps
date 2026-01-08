@@ -87,7 +87,7 @@ public class WeightedDigraph {
      * @throws IllegalArgumentException if {@code e} is outside the valid range
      */
 
-    private void validateEdge(int e) {
+    protected void validateEdge(int e) {
         if (e < 0 || e >= E) {
             throw new IllegalArgumentException("codes.Edge id must be between 0 and " + (E - 1));
         }

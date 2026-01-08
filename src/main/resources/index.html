@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Routing Demo</title>
+
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+
+        .panel {
+            position: absolute;
+            right: 10px;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            z-index: 1000;
+        }
+
+        #help {
+            top: 10px;
+            width: 220px;
+        }
+
+        #directions {
+            top: 140px;
+            width: 320px;
+            max-height: 60%;
+            overflow-y: auto;
+        }
+
+        #directions b {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        #steps div {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div id="help" class="panel">
+    <b>Click map:</b><br>
+    1️⃣ Start<br>
+    2️⃣ Destination<br>
+    3️⃣ Reset
+</div>
+
+<div id="directions" class="panel">
+    <b>Directions</b>
+    <div id="steps"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const map = L.map('map').setView([46.235, -63.125], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let startMarker = null;
+    let endMarker = null;
+    let routeLayer = null;
+    let startConnector = null;
+    let endConnector = null;
+
+    /* ------------------------------------------------------------
+     * Helpers
+     * ------------------------------------------------------------ */
+
+    function haversine(a, b) {
+        const R = 6371000; // meters
+        const toRad = x => x * Math.PI / 180;
+
+        const dLat = toRad(b.lat - a.lat);
+        const dLon = toRad(b.lng - a.lng);
+
+        const lat1 = toRad(a.lat);
+        const lat2 = toRad(b.lat);
+
+        const h =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1) * Math.cos(lat2) *
+            Math.sin(dLon / 2) ** 2;
+
+        return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+
+    function clearRoute() {
+        if (routeLayer) {
+            map.removeLayer(routeLayer);
+            routeLayer = null;
+        }
+        if (startConnector) {
+            map.removeLayer(startConnector);
+            startConnector = null;
+        }
+        if (endConnector) {
+            map.removeLayer(endConnector);
+            endConnector = null;
+        }
+        document.getElementById("steps").innerHTML = "";
+    }
+
+    /* ------------------------------------------------------------
+     * Routing
+     * ------------------------------------------------------------ */
+
+    function requestRoute(start, end) {
+        clearRoute();
+
+        const url =
+            `http://localhost:8080/route?lat1=${start.lat}&lon1=${start.lng}` +
+            `&lat2=${end.lat}&lon2=${end.lng}`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // --- draw route ---
+                routeLayer = L.geoJSON(data, {
+                    style: {
+                        color: 'blue',
+                        weight: 5
+                    }
+                }).addTo(map);
+
+                // --- dashed connectors (ONLY if close) ---
+                const coords = data.geometry.coordinates;
+
+                const routeStart = L.latLng(
+                    coords[0][1],
+                    coords[0][0]
+                );
+
+                const routeEnd = L.latLng(
+                    coords[coords.length - 1][1],
+                    coords[coords.length - 1][0]
+                );
+
+                const startLL = startMarker.getLatLng();
+                const endLL = endMarker.getLatLng();
+
+                const maxSnapDist = 100; // meters
+
+                if (haversine(startLL, routeStart) <= maxSnapDist) {
+                    startConnector = L.polyline(
+                        [startLL, routeStart],
+                        {
+                            color: 'gray',
+                            weight: 2,
+                            dashArray: '6,6',
+                            opacity: 0.7
+                        }
+                    ).addTo(map);
+                }
+
+                if (haversine(endLL, routeEnd) <= maxSnapDist) {
+                    endConnector = L.polyline(
+                        [routeEnd, endLL],
+                        {
+                            color: 'gray',
+                            weight: 2,
+                            dashArray: '6,6',
+                            opacity: 0.7
+                        }
+                    ).addTo(map);
+                }
+
+                // --- directions ---
+                const stepsDiv = document.getElementById("steps");
+                if (data.properties && data.properties.instructions) {
+                    data.properties.instructions.forEach((text, i) => {
+                        const div = document.createElement("div");
+                        div.textContent = `${i + 1}. ${text}`;
+                        stepsDiv.appendChild(div);
+                    });
+                }
+
+                // zoom to route
+                map.fitBounds(routeLayer.getBounds());
+            })
+            .catch(err => alert(err));
+    }
+
+    /* ------------------------------------------------------------
+     * Map interaction
+     * ------------------------------------------------------------ */
+
+    map.on('click', e => {
+
+        if (!startMarker) {
+            startMarker = L.marker(e.latlng, { draggable: true })
+                .addTo(map)
+                .bindPopup('Start')
+                .openPopup();
+
+            startMarker.on('dragend', () => {
+                if (endMarker) {
+                    requestRoute(
+                        startMarker.getLatLng(),
+                        endMarker.getLatLng()
+                    );
+                }
+            });
+
+        } else if (!endMarker) {
+            endMarker = L.marker(e.latlng, { draggable: true })
+                .addTo(map)
+                .bindPopup('Destination')
+                .openPopup();
+
+            endMarker.on('dragend', () => {
+                requestRoute(
+                    startMarker.getLatLng(),
+                    endMarker.getLatLng()
+                );
+            });
+
+            requestRoute(
+                startMarker.getLatLng(),
+                endMarker.getLatLng()
+            );
+
+        } else {
+            // reset
+            map.removeLayer(startMarker);
+            map.removeLayer(endMarker);
+            clearRoute();
+
+            startMarker = null;
+            endMarker = null;
+        }
+    });
+</script>
+
+</body>
+</html>

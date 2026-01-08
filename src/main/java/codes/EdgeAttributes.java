@@ -1,20 +1,24 @@
 package codes;
 
 /**
- * Stores distance and time attributes for edges in a weighted graph.
+ * Stores distance, time, and street name attributes for edges in a weighted graph.
  *
  * <p>This class maintains parallel arrays for edge attributes, indexed by edge ID.
  * It supports dynamic resizing to accommodate graphs that grow over time.</p>
  *
  * <p>Typical usage pattern:
  * <pre>
- *     codes.EdgeAttributes attrs = new codes.EdgeAttributes();
+ *     EdgeAttributes attrs = new EdgeAttributes();
  *     // After adding an edge with ID = graph.E() - 1:
  *     attrs.setEdgeCount(graph.E());
  *     attrs.setDistanceMeters(edgeId, distance);
  *     attrs.setTimeSeconds(edgeId, time);
+ *     attrs.setStreetName(edgeId, "Main Street");
  * </pre>
  * </p>
+ *
+ * @see RoutingEngine uses edge attributes for path cost computation
+ * @see InstructionGenerator uses street names for turn-by-turn directions
  */
 public class EdgeAttributes {
 
@@ -27,17 +31,21 @@ public class EdgeAttributes {
     /** Travel time in seconds for each edge. */
     private double[] timeSeconds;
 
+    /** Street name for each edge (may be null for unnamed roads). */
+    private String[] streetName;
+
     /**
-     * Initializes an empty codes.EdgeAttributes with default capacity of 4.
+     * Initializes an empty EdgeAttributes with default capacity of 4.
      */
     public EdgeAttributes() {
         this.edgeCount = 0;
         this.distanceMeters = new double[4];
         this.timeSeconds = new double[4];
+        this.streetName = new String[4];
     }
 
     /**
-     * Initializes an empty codes.EdgeAttributes with the specified initial capacity.
+     * Initializes an empty EdgeAttributes with the specified initial capacity.
      *
      * @param initialCapacity the initial capacity for edge storage (minimum 4)
      * @throws IllegalArgumentException if {@code initialCapacity < 0}
@@ -48,6 +56,7 @@ public class EdgeAttributes {
         this.edgeCount = 0;
         this.distanceMeters = new double[cap];
         this.timeSeconds = new double[cap];
+        this.streetName = new String[cap];
     }
 
     /**
@@ -77,12 +86,15 @@ public class EdgeAttributes {
 
         double[] newDist = new double[newCap];
         double[] newTime = new double[newCap];
+        String[] newStreet = new String[newCap];
 
         System.arraycopy(distanceMeters, 0, newDist, 0, distanceMeters.length);
         System.arraycopy(timeSeconds, 0, newTime, 0, timeSeconds.length);
+        System.arraycopy(streetName, 0, newStreet, 0, streetName.length);
 
         distanceMeters = newDist;
         timeSeconds = newTime;
+        streetName = newStreet;
     }
 
     /**
@@ -111,6 +123,33 @@ public class EdgeAttributes {
         if (edgeId < 0 || edgeId >= edgeCount) {
             throw new IllegalArgumentException("edgeId must be between 0 and " + (edgeCount - 1));
         }
+    }
+
+    /**
+     * Sets the street name for the specified edge.
+     *
+     * <p>Street names are used by {@link InstructionGenerator} to produce
+     * human-readable turn-by-turn directions.</p>
+     *
+     * @param edgeId the edge ID
+     * @param name   the street name (may be null for unnamed roads)
+     * @throws IllegalArgumentException if {@code edgeId} is invalid
+     */
+    public void setStreetName(int edgeId, String name) {
+        validateEdgeId(edgeId);
+        streetName[edgeId] = name;
+    }
+
+    /**
+     * Returns the street name for the specified edge.
+     *
+     * @param edgeId the edge ID
+     * @return the street name, or {@code null} if unnamed
+     * @throws IllegalArgumentException if {@code edgeId} is invalid
+     */
+    public String streetName(int edgeId) {
+        validateEdgeId(edgeId);
+        return streetName[edgeId];
     }
 
     /**
@@ -165,5 +204,15 @@ public class EdgeAttributes {
     public double timeSeconds(int edgeId) {
         validateEdgeId(edgeId);
         return timeSeconds[edgeId];
+    }
+
+    /**
+     * Returns a string summary for debugging.
+     *
+     * @return summary with edge count
+     */
+    @Override
+    public String toString() {
+        return String.format("EdgeAttributes[%d edges]", edgeCount);
     }
 }

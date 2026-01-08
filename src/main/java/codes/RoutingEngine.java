@@ -142,6 +142,7 @@ public class RoutingEngine {
      * @throws IllegalArgumentException if either vertex is invalid
      * @throws IllegalStateException    if VertexStore was not provided or vmaxMetersPerSec <= 0
      */
+
     public Route routeTimeAStar(int start, int goal) {
         return route(start, goal, Metric.TIME, Algorithm.ASTAR);
     }
@@ -157,6 +158,7 @@ public class RoutingEngine {
      * @throws IllegalArgumentException if either vertex is invalid
      * @throws IllegalStateException    if A* prerequisites are not met
      */
+
     private Route route(int start, int goal, Metric metric, Algorithm algorithm) {
         digraph.validateVertex(start);
         digraph.validateVertex(goal);
@@ -265,7 +267,6 @@ public class RoutingEngine {
             this.totalCost = totalCost;
             this.edgeIds = edgeIds;
         }
-
 
         /**
          * Returns a string representation of this route.

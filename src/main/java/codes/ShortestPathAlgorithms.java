@@ -16,6 +16,7 @@ import java.util.Stack;
  *
  * @see <a href="https://algs4.cs.princeton.edu/44sp/">Shortest Paths - Algorithms, 4th Edition</a>
  */
+
 public class ShortestPathAlgorithms {
 
     /**
@@ -23,6 +24,7 @@ public class ShortestPathAlgorithms {
      *
      * <p>Used by the A* algorithm to compute straight-line distance heuristics.</p>
      */
+
     public static class VertexStore {
         private final double[] x;
         private final double[] y;
@@ -34,6 +36,7 @@ public class ShortestPathAlgorithms {
          * @param y the y-coordinates for each vertex
          * @throws IllegalArgumentException if either array is null or lengths differ
          */
+
         public VertexStore(double[] x, double[] y) {
             if (x == null || y == null) throw new IllegalArgumentException("x/y arrays are null");
             if (x.length != y.length) throw new IllegalArgumentException("x and y must have same length");
@@ -46,6 +49,7 @@ public class ShortestPathAlgorithms {
          *
          * @return the number of vertices
          */
+
         public int V() {
             return x.length;
         }
@@ -56,6 +60,7 @@ public class ShortestPathAlgorithms {
          * @param v the vertex
          * @return the x-coordinate
          */
+
         public double x(int v) {
             return x[v];
         }
@@ -66,6 +71,7 @@ public class ShortestPathAlgorithms {
          * @param v the vertex
          * @return the y-coordinate
          */
+
         public double y(int v) {
             return y[v];
         }
@@ -81,6 +87,7 @@ public class ShortestPathAlgorithms {
      * <p>Time complexity: O(E log V) where E is the number of edges and V is
      * the number of vertices.</p>
      */
+
     public static class Dijkstra {
         private final double[] distTo;
         private final int[] parentEdgeId;
@@ -100,6 +107,7 @@ public class ShortestPathAlgorithms {
          * @param s      the source vertex
          * @throws IllegalArgumentException if {@code s} is not a valid vertex
          */
+
         public Dijkstra(WeightedDigraph G, EdgeAttributes attrs, RoutingEngine.Metric metric, int s) {
             this.G = G;
             this.attrs = attrs;
@@ -133,6 +141,7 @@ public class ShortestPathAlgorithms {
          * @param edgeId the edge ID
          * @return the cost (distance in meters or time in seconds)
          */
+
         private double edgeCost(int edgeId) {
             return (metric == RoutingEngine.Metric.DISTANCE)
                     ? attrs.distanceMeters(edgeId)
@@ -144,6 +153,7 @@ public class ShortestPathAlgorithms {
          *
          * @param v the vertex to relax from
          */
+
         private void relax(int v) {
             for (Edge e : G.outEdges(v)) {
                 int w = e.otherEnd();
@@ -167,6 +177,7 @@ public class ShortestPathAlgorithms {
          * @return the distance (or {@code Double.POSITIVE_INFINITY} if unreachable)
          * @throws IllegalArgumentException if {@code v} is not a valid vertex
          */
+
         public double distTo(int v) {
             G.validateVertex(v);
             return distTo[v];
@@ -179,6 +190,7 @@ public class ShortestPathAlgorithms {
          * @return {@code true} if a path exists; {@code false} otherwise
          * @throws IllegalArgumentException if {@code v} is not a valid vertex
          */
+
         public boolean hasPathTo(int v) {
             G.validateVertex(v);
             return distTo[v] < Double.POSITIVE_INFINITY;
@@ -193,6 +205,7 @@ public class ShortestPathAlgorithms {
          * @throws IllegalArgumentException if {@code t} is not a valid vertex
          * @throws IllegalStateException    if path reconstruction fails unexpectedly
          */
+
         public Iterable<Integer> pathEdgeIdsTo(int t) {
             G.validateVertex(t);
             if (!hasPathTo(t) || t == s) return new Stack<>();
@@ -229,6 +242,7 @@ public class ShortestPathAlgorithms {
      * <p>Time complexity: O(E log V) worst case, but typically faster than Dijkstra
      * for point-to-point queries due to heuristic pruning.</p>
      */
+
     public static class Astar {
         private final double[] gScore;
         private final int[] parentEdgeId;
@@ -257,6 +271,7 @@ public class ShortestPathAlgorithms {
          *                                  doesn't match graph, or vmaxMetersPerSec is
          *                                  non-positive when using TIME metric
          */
+
         public Astar(WeightedDigraph G,
                      EdgeAttributes attrs,
                      VertexStore vs,
@@ -310,6 +325,7 @@ public class ShortestPathAlgorithms {
          * @param edgeId the edge ID
          * @return the cost (distance in meters or time in seconds)
          */
+
         private double edgeCost(int edgeId) {
             return (metric == RoutingEngine.Metric.DISTANCE)
                     ? attrs.distanceMeters(edgeId)
@@ -325,6 +341,7 @@ public class ShortestPathAlgorithms {
          * @param v the vertex
          * @return the heuristic estimate
          */
+
         private double heuristic(int v) {
             double dx = vs.x(v) - vs.x(goal);
             double dy = vs.y(v) - vs.y(goal);
@@ -343,6 +360,7 @@ public class ShortestPathAlgorithms {
          * @param v the vertex
          * @return the f-score
          */
+
         private double fScore(int v) {
             return gScore[v] + heuristic(v);
         }
@@ -352,6 +370,7 @@ public class ShortestPathAlgorithms {
          *
          * @param v the vertex to relax from
          */
+
         private void relax(int v) {
             for (Edge e : G.outEdges(v)) {
                 int w = e.otherEnd();
@@ -374,6 +393,7 @@ public class ShortestPathAlgorithms {
          *
          * @return {@code true} if a path exists; {@code false} otherwise
          */
+
         public boolean hasPathToGoal() {
             return gScore[goal] < Double.POSITIVE_INFINITY;
         }
@@ -383,6 +403,7 @@ public class ShortestPathAlgorithms {
          *
          * @return the path cost (or {@code Double.POSITIVE_INFINITY} if unreachable)
          */
+
         public double costToGoal() {
             return gScore[goal];
         }
@@ -394,6 +415,7 @@ public class ShortestPathAlgorithms {
          *         empty if no path exists or goal equals source
          * @throws IllegalStateException if path reconstruction fails unexpectedly
          */
+
         public Iterable<Integer> pathEdgeIdsToGoal() {
             if (!hasPathToGoal() || goal == s) return new Stack<>();
 
