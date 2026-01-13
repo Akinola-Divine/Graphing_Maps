@@ -25,7 +25,7 @@ public class Main {
      * @param args command-line arguments (currently ignored)
      */
     public static void main(String[] args) {
-        Path osmFile = Path.of("pei.osm");
+        Path osmFile = Path.of("data/pei.osm");
 
         OSMCompiler compiler = new OSMCompiler();
         OSMCompiler.BuildResult result = compiler.compile(osmFile);

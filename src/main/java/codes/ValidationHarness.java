@@ -312,7 +312,7 @@ public class ValidationHarness {
     public static void main(String[] args) {
         System.out.println("Compiling OSM...");
         Main.OSMCompiler compiler = new Main.OSMCompiler();
-        Main.OSMCompiler.BuildResult result = compiler.compile(Path.of("pei.osm"));
+        Main.OSMCompiler.BuildResult result = compiler.compile(Path.of("data/pei.osm"));
 
         System.out.printf("Graph: V=%d, E=%d%n", result.graph.V(), result.graph.E());
         System.out.println("Running validation...\n");

@@ -66,7 +66,7 @@ public class RouteServer {
 
         System.out.println("Compiling OSM...");
         Main.OSMCompiler compiler = new Main.OSMCompiler();
-        result = compiler.compile(java.nio.file.Path.of("src/main/resources/pei.osm"));
+        result = compiler.compile(java.nio.file.Path.of("src/main/data/pei.osm"));
         System.out.println("Graph ready: V=" + result.graph.V() + " E=" + result.graph.E());
 
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
