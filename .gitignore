@@ -27,3 +27,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# large map data
+*.osm
+*.pbf
+*.geojson
+data/
